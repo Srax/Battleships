@@ -12,13 +12,9 @@ import tournament.player.PlayerFactory;
  *
  * @author thoma
  */
-public class G06 implements PlayerFactory<BattleshipsPlayer>{
+public class G06 implements PlayerFactory<BattleshipsPlayer> {
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        // TODO code application logic here
+    public G06() {
     }
 
     @Override
@@ -28,7 +24,7 @@ public class G06 implements PlayerFactory<BattleshipsPlayer>{
 
     @Override
     public String getID() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "G06";
     }
 
     @Override
@@ -38,7 +34,6 @@ public class G06 implements PlayerFactory<BattleshipsPlayer>{
 
     @Override
     public String[] getAuthors() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
     }
-    
-}
+
