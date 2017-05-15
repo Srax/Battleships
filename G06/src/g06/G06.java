@@ -29,11 +29,13 @@ public class G06 implements PlayerFactory<BattleshipsPlayer> {
 
     @Override
     public String getName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "G06 Super duper gg easy game fam AI";
     }
 
     @Override
     public String[] getAuthors() {
-
+        String[] res = {"Jonas", "Thomas", "Andread"};
+        return res;
     }
 
+}
