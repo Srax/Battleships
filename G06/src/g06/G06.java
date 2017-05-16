@@ -19,7 +19,7 @@ public class G06 implements PlayerFactory<BattleshipsPlayer> {
 
     @Override
     public BattleshipsPlayer getNewInstance() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new MyShooter();
     }
 
     @Override
@@ -29,12 +29,12 @@ public class G06 implements PlayerFactory<BattleshipsPlayer> {
 
     @Override
     public String getName() {
-        return "G06 Super duper gg easy game fam AI";
+        return"G06 Shooter";
     }
 
     @Override
     public String[] getAuthors() {
-        String[] res = {"Jonas", "Thomas", "Andread"};
+        String[] res = {"Jonas", "Thomas", "Andreas"};
         return res;
     }
 
