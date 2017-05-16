@@ -97,20 +97,61 @@ public class MyShooter implements BattleshipsPlayer {
     @Override
     public Position getFireCoordinates(Fleet enemyShips)
     {
-        Position shot = new Position(nextX, nextY);
-        nextX = nextX + 2;
-        if(nextX >= sizeX)
-        {
-            nextX = 0; 
-            ++nextY;
-            if(nextY >= sizeY)
-            {
-                nextY = 0;
+      Random rnd = new Random();
+        final int shootPattern = rnd.nextInt(2) + 1;
+
+        if (shootPattern == 1) {
+            Position shot = new Position(nextX, nextY);
+            ++nextX;
+            if (nextX >= sizeX) {
+                nextX = 0;
+                ++nextY;
+                if (nextY >= sizeY) {
+                    nextY = 0;
+                }
             }
+            return shot;
         }
-        return shot;
+        if (shootPattern == 2) {
+            Position shot = new Position(nextX, nextY);
+            ++nextY;
+            if (nextY >= sizeY) {
+                nextY = 0;
+                ++nextX;
+                if (nextX >= sizeX) {
+                    nextX = 0;
+                }
+            }
+            return shot;
+            
+        }
+//        if (shootPattern == 3) {
+//            Position shot = new Position(sizeX, sizeY);
+//            --sizeY;
+//            if (sizeY < 0) {
+//                sizeY = 10;
+//                --sizeX;
+//                if (sizeX < 0) {
+//                    sizeX = 10;
+//                }
+//            }
+//            return shot;
+//        }
+//        
+//        if (shootPattern == 4) {
+//            Position shot = new Position(sizeX, sizeY);
+//            --sizeX;
+//            if (sizeX < 0) {
+//                sizeX = 10;
+//                --sizeY;
+//                if (sizeY < 0) {
+//                    sizeY = 10;
+//                }
+//            }
+//            return shot;
+//        }
+        return null;
     }
-    
     
     /**
      * Called right after getFireCoordinates(...) to let your AI know if you hit
