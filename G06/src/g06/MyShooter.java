@@ -10,6 +10,7 @@ import battleship.interfaces.Board;
 import battleship.interfaces.Fleet;
 import battleship.interfaces.Position;
 import battleship.interfaces.Ship;
+import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -22,16 +23,13 @@ public class MyShooter implements BattleshipsPlayer {
     private final static Random rnd = new Random();
     private int sizeX;
     private int sizeY;
-
+    private int roundCounter;
     private int nextX;
     private int nextY;
-   
-    array
-    
-    
-    Random rndShoot = new Random();
-    
-    
+    //ArrayList<Position> usedPos = new ArrayList<>();
+    ArrayList<Position> myBoard = new ArrayList<>();
+    int[][] boardNew = new int[sizeX][sizeY];
+
     int shootingPattern;
 
     /**
@@ -52,28 +50,47 @@ public class MyShooter implements BattleshipsPlayer {
      */
     @Override
     public void placeShips(Fleet fleet, Board board) {
+       
         nextX = 0;
         nextY = 0;
         sizeX = board.sizeX();
         sizeY = board.sizeY();
-        
-        
-        
+
         for (int i = 0; i < fleet.getNumberOfShips(); ++i) {
             Ship s = fleet.getShip(i);
             boolean vertical = rnd.nextBoolean();
             Position pos;
-            if (vertical) {
-                int x = rnd.nextInt(sizeX);
-                int y = rnd.nextInt(sizeY - (s.size() - 1));
-                pos = new Position(x, y);
-                
-            } else {
-                int x = rnd.nextInt(sizeX - (s.size() - 1));
-                int y = rnd.nextInt(sizeY);
-                pos = new Position(x, y);
-            }
+            int x;
+            int y;
+
+            do {
+               if(vertical){
+                x = rnd.nextInt(sizeX);
+                y = rnd.nextInt(sizeY - (s.size() - 1));
+               pos = new Position(x, y);
+               }
+               else{
+                x = rnd.nextInt(sizeX - (s.size()-1));
+                y = rnd.nextInt(sizeY);
+               pos = new Position(x, y);
+               
+               }
+            } while (checkCollision(s, pos, vertical));
             board.placeShip(pos, s, vertical);
+
+//                 Remember position
+            for (int j = 0; j < fleet.getShip(i).size(); j++) {
+                if (vertical) {
+                    pos = new Position(x, y + j);
+                   
+                } else {
+                    pos = new Position(x + j, y);
+                }
+                myBoard.add(pos);
+            }
+
+            board.placeShip(pos, s, vertical);
+
         }
     }
 
@@ -86,7 +103,8 @@ public class MyShooter implements BattleshipsPlayer {
      * @param pos Position of the enemy's shot
      */
     @Override
-    public void incoming(Position pos) {
+    public void incoming(Position pos
+    ) {
 
         //Do nothing
     }
@@ -101,9 +119,13 @@ public class MyShooter implements BattleshipsPlayer {
      *
      * @return Position of you next shot.
      */
-    public Position getFireCoordinates(Fleet enemyShips) {
+    @Override
+    public Position getFireCoordinates(Fleet enemyShips
+    ) {
+        Random rnd = new Random();
+        final int shootPattern = rnd.nextInt(2) + 1;
 
-            Position shot = new Position(nextX, nextY);
+        Position shot = new Position(nextX, nextY);
         if (shootingPattern == 1) {
 
             ++nextX;
@@ -116,7 +138,7 @@ public class MyShooter implements BattleshipsPlayer {
                 return shot;
             }
             if (shootingPattern == 2) {
-                
+
                 ++nextX;
                 if (nextX >= sizeX) {
                     nextX = 0;
@@ -127,6 +149,8 @@ public class MyShooter implements BattleshipsPlayer {
                     return shot;
                 }
             }
+            return shot;
+
         }
         return null;
     }
@@ -142,12 +166,9 @@ public class MyShooter implements BattleshipsPlayer {
      * @param enemyShips Fleet the enemy's ships.
      */
     @Override
-    public void hitFeedBack(boolean hit, Fleet enemyShips) {
-       if(hit == true){
-           nextY = nextY++;
-          }else
-           nextX = nextX++;
-       
+    public void hitFeedBack(boolean hit, Fleet enemyShips
+    ) {
+        //Do nothing
     }
 
     /**
@@ -157,7 +178,9 @@ public class MyShooter implements BattleshipsPlayer {
      * @param rounds int the number of rounds i a match
      */
     @Override
-    public void startMatch(int rounds, Fleet ships, int sizeX, int sizeY) {
+    public void startMatch(int rounds, Fleet ships,
+            int sizeX, int sizeY
+    ) {
         //Do nothing...
     }
 
@@ -167,8 +190,9 @@ public class MyShooter implements BattleshipsPlayer {
      * @param round int the current round number.
      */
     @Override
-    public void startRound(int round) {
-            
+    public void startRound(int round
+    ) {
+        shootingPattern = rnd.nextInt(2) + 1;
     }
 
     /**
@@ -182,8 +206,14 @@ public class MyShooter implements BattleshipsPlayer {
      * @param enemyPoints int enemy's points this round.
      */
     @Override
-    public void endRound(int round, int points, int enemyPoints) {
-        //Do nothing
+    public void endRound(int round, int points, int enemyPoints
+    ) {
+        roundCounter++;
+        if (roundCounter == 2) {
+            myBoard.clear();
+            roundCounter = 0;
+        }
+
     }
 
     /**
@@ -195,9 +225,28 @@ public class MyShooter implements BattleshipsPlayer {
      * @param draw int the number of draws in this match.
      */
     @Override
-    public void endMatch(int won, int lost, int draw) {
+    public void endMatch(int won, int lost, int draw
+    ) {
         //Do nothing
     }
 
-  
+    public boolean checkCollision(Ship s, Position pos, boolean vertical) {
+        // check for collision
+        for (int j = 0; j < s.size(); j++) {
+//            Position p1 = new Position(vertical ? pos.x : pos.x+j, vertical ? pos.y + j : pos.y);
+            Position p1;
+            if (vertical) {
+                p1 = new Position(pos.x, pos.y + j);
+            } else {
+                p1 = new Position(pos.x + j, pos.y);
+            }
+            for (Position p : myBoard) {
+                if (p.equals(p1)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 }
