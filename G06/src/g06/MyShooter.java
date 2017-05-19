@@ -13,6 +13,7 @@ import battleship.interfaces.Ship;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.Random;
+import sun.font.CreatedFontTracker;
 
 /**
  *
@@ -21,15 +22,14 @@ import java.util.Random;
 public class MyShooter implements BattleshipsPlayer {
 
     private final static Random rnd = new Random();
+    private static int positionStatus;
     private int sizeX;
     private int sizeY;
     private int roundCounter;
     private int nextX;
     private int nextY;
-    //ArrayList<Position> usedPos = new ArrayList<>();
+    int[][] myShootBoard;
     ArrayList<Position> myBoard = new ArrayList<>();
-    int[][] boardNew = new int[sizeX][sizeY];
-
     int shootingPattern;
 
     /**
@@ -50,31 +50,33 @@ public class MyShooter implements BattleshipsPlayer {
      */
     @Override
     public void placeShips(Fleet fleet, Board board) {
-       
+
         nextX = 0;
         nextY = 0;
         sizeX = board.sizeX();
         sizeY = board.sizeY();
 
+        //Picks the ship from the fleet based on index 
         for (int i = 0; i < fleet.getNumberOfShips(); ++i) {
             Ship s = fleet.getShip(i);
-            boolean vertical = rnd.nextBoolean();
+            boolean vertical;
             Position pos;
             int x;
             int y;
 
             do {
-               if(vertical){
-                x = rnd.nextInt(sizeX);
-                y = rnd.nextInt(sizeY - (s.size() - 1));
-               pos = new Position(x, y);
-               }
-               else{
-                x = rnd.nextInt(sizeX - (s.size()-1));
-                y = rnd.nextInt(sizeY);
-               pos = new Position(x, y);
-               
-               }
+                vertical = rnd.nextBoolean();
+                if (vertical) {
+                    //Generates Cordinates
+                    x = rnd.nextInt(sizeX);
+                    y = rnd.nextInt(sizeY - (s.size() - 1));
+                    pos = new Position(x, y);
+                } else {
+                    x = rnd.nextInt(sizeX - (s.size() - 1));
+                    y = rnd.nextInt(sizeY);
+                    pos = new Position(x, y);
+
+                }
             } while (checkCollision(s, pos, vertical));
             board.placeShip(pos, s, vertical);
 
@@ -82,7 +84,7 @@ public class MyShooter implements BattleshipsPlayer {
             for (int j = 0; j < fleet.getShip(i).size(); j++) {
                 if (vertical) {
                     pos = new Position(x, y + j);
-                   
+
                 } else {
                     pos = new Position(x + j, y);
                 }
@@ -122,38 +124,42 @@ public class MyShooter implements BattleshipsPlayer {
     @Override
     public Position getFireCoordinates(Fleet enemyShips
     ) {
-        Random rnd = new Random();
-        final int shootPattern = rnd.nextInt(2) + 1;
+        if (positionStatus == 2) {
+            myShootBoard[nextX][nextY] = 2;
+            nextX++;
+                 
 
-        Position shot = new Position(nextX, nextY);
-        if (shootingPattern == 1) {
+            
+        }else if(positionStatus == 1){
+            myShootBoard[nextX][nextY] = 1;
+            nextX++;
+                 
 
-            ++nextX;
+            
+            
+        } else {
+            nextX += 2;
+
             if (nextX >= sizeX) {
-                nextX = 0;
-                ++nextY;
-                if (nextY >= sizeY) {
-                    nextY = 0;
-                }
-                return shot;
-            }
-            if (shootingPattern == 2) {
-
-                ++nextX;
-                if (nextX >= sizeX) {
+                if (nextX == sizeX) {
+                    nextX = 1;
+                    ++nextY;
+                    if (nextY >= sizeY) {
+                        nextY = 0;
+                    }
+                } else {
                     nextX = 0;
                     ++nextY;
                     if (nextY >= sizeY) {
                         nextY = 0;
                     }
-                    return shot;
                 }
-            }
-            return shot;
 
-        }
-        return null;
+            }
     }
+            Position shot = new Position(nextX, nextY);
+            return shot;
+        }
 
     /**
      * Called right after getFireCoordinates(...) to let your AI know if you hit
@@ -168,6 +174,13 @@ public class MyShooter implements BattleshipsPlayer {
     @Override
     public void hitFeedBack(boolean hit, Fleet enemyShips
     ) {
+
+        if (hit == true) {
+            positionStatus = 2;
+        } else {
+            positionStatus = 1;
+        }
+
         //Do nothing
     }
 
@@ -181,6 +194,13 @@ public class MyShooter implements BattleshipsPlayer {
     public void startMatch(int rounds, Fleet ships,
             int sizeX, int sizeY
     ) {
+        myShootBoard = new int[sizeX][sizeY];
+        for (int i = 0; i < sizeX; i++) {
+            for (int j = 0; j < sizeY; j++) {
+                myShootBoard[i][j] = 0;
+            }
+        }
+
         //Do nothing...
     }
 
@@ -192,7 +212,7 @@ public class MyShooter implements BattleshipsPlayer {
     @Override
     public void startRound(int round
     ) {
-        shootingPattern = rnd.nextInt(2) + 1;
+
     }
 
     /**
