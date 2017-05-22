@@ -107,7 +107,6 @@ public class MyShooter implements BattleshipsPlayer {
     @Override
     public void incoming(Position pos
     ) {
-
         //Do nothing
     }
 
@@ -124,42 +123,18 @@ public class MyShooter implements BattleshipsPlayer {
     @Override
     public Position getFireCoordinates(Fleet enemyShips
     ) {
-        if (positionStatus == 2) {
-            myShootBoard[nextX][nextY] = 2;
-            nextX++;
-                 
-
-            
-        }else if(positionStatus == 1){
-            myShootBoard[nextX][nextY] = 1;
-            nextX++;
-                 
-
-            
-            
-        } else {
-            nextX += 2;
-
-            if (nextX >= sizeX) {
-                if (nextX == sizeX) {
-                    nextX = 1;
-                    ++nextY;
-                    if (nextY >= sizeY) {
-                        nextY = 0;
-                    }
-                } else {
-                    nextX = 0;
-                    ++nextY;
-                    if (nextY >= sizeY) {
-                        nextY = 0;
-                    }
-                }
-
+        Position shot = new Position(nextX, nextY);
+        ++nextX;
+        if (nextX >= sizeX) {
+            nextX = 0;
+            ++nextY;
+            if (nextY >= sizeY) {
+                nextY = 0;
             }
-    }
-            Position shot = new Position(nextX, nextY);
-            return shot;
         }
+        return shot;
+
+    }
 
     /**
      * Called right after getFireCoordinates(...) to let your AI know if you hit
@@ -174,15 +149,15 @@ public class MyShooter implements BattleshipsPlayer {
     @Override
     public void hitFeedBack(boolean hit, Fleet enemyShips
     ) {
-
         if (hit == true) {
-            positionStatus = 2;
-        } else {
-            positionStatus = 1;
+            myShootBoard[nextX][nextY] = 2;
         }
-
+        if (hit != true) {
+            myShootBoard[nextX][nextY] = 1;
+        }
         //Do nothing
-    }
+    
+    };
 
     /**
      * Called in the beginning of each match to inform about the number of
@@ -194,14 +169,13 @@ public class MyShooter implements BattleshipsPlayer {
     public void startMatch(int rounds, Fleet ships,
             int sizeX, int sizeY
     ) {
-        myShootBoard = new int[sizeX][sizeY];
+         myShootBoard = new int[sizeX][sizeY];
         for (int i = 0; i < sizeX; i++) {
             for (int j = 0; j < sizeY; j++) {
                 myShootBoard[i][j] = 0;
             }
+            //Do nothing...
         }
-
-        //Do nothing...
     }
 
     /**
@@ -212,7 +186,8 @@ public class MyShooter implements BattleshipsPlayer {
     @Override
     public void startRound(int round
     ) {
-
+        printBoard(myShootBoard);
+    
     }
 
     /**
@@ -228,12 +203,12 @@ public class MyShooter implements BattleshipsPlayer {
     @Override
     public void endRound(int round, int points, int enemyPoints
     ) {
+        printBoard(myShootBoard);
         roundCounter++;
         if (roundCounter == 2) {
             myBoard.clear();
             roundCounter = 0;
         }
-
     }
 
     /**
@@ -269,4 +244,15 @@ public class MyShooter implements BattleshipsPlayer {
         return false;
     }
 
+    public static void printBoard(int[][] b) {
+        // traverse 1. dimension
+        for (int i = 0; i < b.length; i++) {
+            // traverse 2. dimension
+            for (int j = 0; j < b[i].length; j++) {
+                System.out.print(b[i][j] + "  "); // i ~ linenumber
+            }
+            System.out.println("");             // new line
+        }
+
+    }
 }
