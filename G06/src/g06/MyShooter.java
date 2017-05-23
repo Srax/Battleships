@@ -29,6 +29,7 @@ public class MyShooter implements BattleshipsPlayer {
     private int nextX;
     private int nextY;
     int[][] myShootBoard;
+    private boolean hunt;
     ArrayList<Position> myBoard = new ArrayList<>();
     int shootingPattern;
 
@@ -123,17 +124,38 @@ public class MyShooter implements BattleshipsPlayer {
     @Override
     public Position getFireCoordinates(Fleet enemyShips
     ) {
-        Position shot = new Position(nextX, nextY);
-        ++nextX;
-        if (nextX >= sizeX) {
-            nextX = 0;
-            ++nextY;
-            if (nextY >= sizeY) {
-                nextY = 0;
+
+        Position shot = new Position(rnd.nextInt(sizeX), rnd.nextInt(sizeY));
+        if(hunt = true){
+            
+        for (int x = 0; x < sizeX; x++) {
+            for (int y = 0; y < sizeY; y++) {
+                if (myShootBoard[x][y] == 2) {
+                    shot = checkNeighbours(x, y);
+                    System.out.println(x + " - " + y);
+        }
+
+                }
+
             }
         }
+        //while (myShootBoard[shot.x][shot.y] > 0) {
+        else{ 
+        System.out.println("lkdgkldfklghdflkghfdkghkfdhgkjdfhg bdskjbsdnm sdoejrlsd");
+            shot = new Position(rnd.nextInt(sizeX), rnd.nextInt(sizeY));
+
+        }
+        System.out.println("get Firecoadsakodhkashdlkas");
         return shot;
 
+//                ++nextX;
+//                if (nextX >= sizeX) {
+//                    nextX = 0;
+//                    ++nextY;
+//                    if (nextY >= sizeY) {
+//                        nextY = 0;
+//                    }
+//                }
     }
 
     /**
@@ -151,13 +173,17 @@ public class MyShooter implements BattleshipsPlayer {
     ) {
         if (hit == true) {
             myShootBoard[nextX][nextY] = 2;
+            hunt = true;
+
         }
+
         if (hit != true) {
             myShootBoard[nextX][nextY] = 1;
+            hunt = false;
         }
         //Do nothing
-    
-    };
+
+    }
 
     /**
      * Called in the beginning of each match to inform about the number of
@@ -169,10 +195,10 @@ public class MyShooter implements BattleshipsPlayer {
     public void startMatch(int rounds, Fleet ships,
             int sizeX, int sizeY
     ) {
-         myShootBoard = new int[sizeX][sizeY];
+        myShootBoard = new int[sizeX][sizeY];
         for (int i = 0; i < sizeX; i++) {
             for (int j = 0; j < sizeY; j++) {
-                myShootBoard[i][j] = 0;
+                myShootBoard[j][i] = 0;
             }
             //Do nothing...
         }
@@ -187,7 +213,7 @@ public class MyShooter implements BattleshipsPlayer {
     public void startRound(int round
     ) {
         printBoard(myShootBoard);
-    
+
     }
 
     /**
@@ -254,5 +280,42 @@ public class MyShooter implements BattleshipsPlayer {
             System.out.println("");             // new line
         }
 
+    }
+
+    public Position checkNeighbours(int x, int y) {
+        System.out.println("Check enter");
+        
+        
+        
+        
+        
+        if (x < sizeX - 1 && myShootBoard[x + 1][y] == 0) {
+            System.out.println("x+1 == 0");
+            System.out.println(x +"-"+y);
+            return new Position(x + 1, y);
+        
+        } else if (x > 0 && myShootBoard[x - 1][y] == 0) {
+            System.out.println("x-1 == 0");
+            System.out.println(x +"-"+y);
+            return new Position(x - 1, y);
+       
+        } else if (y < sizeY - 1 && myShootBoard[x][y + 1] == 0) {
+            System.out.println("y+1 == 0");
+            System.out.println(x +"-"+y);
+            return new Position(x, y + 1);
+        
+        } else if (y > 0 && myShootBoard[x][y - 1] == 0) {
+            System.out.println("y-1 == 0");
+            System.out.println(x +"-"+y);
+            return new Position(x, y - 1);
+        
+        } else {
+            System.out.println("all != 0");
+            System.out.println(x +"-"+y);
+            x = rnd.nextInt(sizeX);
+            y = rnd.nextInt(sizeY);
+            return new Position(x, y);
+
+        }
     }
 }
