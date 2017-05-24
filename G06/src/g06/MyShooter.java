@@ -25,11 +25,11 @@ public class MyShooter implements BattleshipsPlayer {
     private static int positionStatus;
     private int sizeX;
     private int sizeY;
+    private Position currentShot;
     private int roundCounter;
-    private int nextX;
-    private int nextY;
     int[][] myShootBoard;
     private boolean hunt;
+
     ArrayList<Position> myBoard = new ArrayList<>();
     int shootingPattern;
 
@@ -51,9 +51,6 @@ public class MyShooter implements BattleshipsPlayer {
      */
     @Override
     public void placeShips(Fleet fleet, Board board) {
-
-        nextX = 0;
-        nextY = 0;
         sizeX = board.sizeX();
         sizeY = board.sizeY();
 
@@ -125,37 +122,24 @@ public class MyShooter implements BattleshipsPlayer {
     public Position getFireCoordinates(Fleet enemyShips
     ) {
 
-        Position shot = new Position(rnd.nextInt(sizeX), rnd.nextInt(sizeY));
-        if(hunt = true){
-            
+        currentShot = new Position(rnd.nextInt(sizeX), rnd.nextInt(sizeY));
+
         for (int x = 0; x < sizeX; x++) {
             for (int y = 0; y < sizeY; y++) {
                 if (myShootBoard[x][y] == 2) {
-                    shot = checkNeighbours(x, y);
-                    System.out.println(x + " - " + y);
-        }
+                    Position shot = checkNeighbours(x, y);
+                    if(shot != null) {
+                        currentShot = shot;
+                        return currentShot;
+                    }
+                    printBoard(myShootBoard);
 
+                    //System.out.println(a + "," + b);
                 }
 
             }
         }
-        //while (myShootBoard[shot.x][shot.y] > 0) {
-        else{ 
-        System.out.println("lkdgkldfklghdflkghfdkghkfdhgkjdfhg bdskjbsdnm sdoejrlsd");
-            shot = new Position(rnd.nextInt(sizeX), rnd.nextInt(sizeY));
-
-        }
-        System.out.println("get Firecoadsakodhkashdlkas");
-        return shot;
-
-//                ++nextX;
-//                if (nextX >= sizeX) {
-//                    nextX = 0;
-//                    ++nextY;
-//                    if (nextY >= sizeY) {
-//                        nextY = 0;
-//                    }
-//                }
+        return currentShot;
     }
 
     /**
@@ -171,15 +155,12 @@ public class MyShooter implements BattleshipsPlayer {
     @Override
     public void hitFeedBack(boolean hit, Fleet enemyShips
     ) {
-        if (hit == true) {
-            myShootBoard[nextX][nextY] = 2;
-            hunt = true;
-
+        if (hit) {
+            myShootBoard[currentShot.x][currentShot.y] = 2;
+            printBoard(myShootBoard);
         }
-
-        if (hit != true) {
-            myShootBoard[nextX][nextY] = 1;
-            hunt = false;
+        else {
+            myShootBoard[currentShot.x][currentShot.y] = 1;
         }
         //Do nothing
 
@@ -194,14 +175,8 @@ public class MyShooter implements BattleshipsPlayer {
     @Override
     public void startMatch(int rounds, Fleet ships,
             int sizeX, int sizeY
-    ) {
+    ) { //Flyt
         myShootBoard = new int[sizeX][sizeY];
-        for (int i = 0; i < sizeX; i++) {
-            for (int j = 0; j < sizeY; j++) {
-                myShootBoard[j][i] = 0;
-            }
-            //Do nothing...
-        }
     }
 
     /**
@@ -284,38 +259,22 @@ public class MyShooter implements BattleshipsPlayer {
 
     public Position checkNeighbours(int x, int y) {
         System.out.println("Check enter");
-        
-        
-        
-        
-        
-        if (x < sizeX - 1 && myShootBoard[x + 1][y] == 0) {
-            System.out.println("x+1 == 0");
-            System.out.println(x +"-"+y);
-            return new Position(x + 1, y);
-        
-        } else if (x > 0 && myShootBoard[x - 1][y] == 0) {
-            System.out.println("x-1 == 0");
-            System.out.println(x +"-"+y);
-            return new Position(x - 1, y);
-       
-        } else if (y < sizeY - 1 && myShootBoard[x][y + 1] == 0) {
-            System.out.println("y+1 == 0");
-            System.out.println(x +"-"+y);
-            return new Position(x, y + 1);
-        
-        } else if (y > 0 && myShootBoard[x][y - 1] == 0) {
-            System.out.println("y-1 == 0");
-            System.out.println(x +"-"+y);
-            return new Position(x, y - 1);
-        
-        } else {
-            System.out.println("all != 0");
-            System.out.println(x +"-"+y);
-            x = rnd.nextInt(sizeX);
-            y = rnd.nextInt(sizeY);
-            return new Position(x, y);
 
+        System.out.println("denne her" + x + " " + y);
+
+        if (x < sizeX - 1 && myShootBoard[x + 1][y] == 0) {
+            return new Position(x + 1, y);
+        } else if (x > 0 && myShootBoard[x - 1][y] == 0) {
+            return new Position(x - 1, y);//myShootBoard[a+1][b] = 4;
+        } else if (y < sizeY - 1 && myShootBoard[x][y + 1] == 0) {
+            return new Position(x, y + 1);//myShootBoard[a+1][b] = 4;
+        } else if (y > 0 && myShootBoard[x][y - 1] == 0) {
+            return new Position(x, y - 1);//myShootBoard[a+1][b] = 4;
+        } else {
+//            return new Position(rnd.nextInt(sizeX), rnd.nextInt(sizeY));//myShootBoard[a+1][b] = 4;
+              return null;
         }
+
     }
+
 }
