@@ -30,7 +30,9 @@ public class MyShooter implements BattleshipsPlayer {
     int[][] myShootBoard;
     private boolean hunt;
 
-    ArrayList<Position> myBoard = new ArrayList<>();
+    ArrayList<Position> shipPositions = new ArrayList<>();
+    ArrayList<Position> shotFired = new ArrayList<>();
+
     int shootingPattern;
 
     /**
@@ -86,7 +88,7 @@ public class MyShooter implements BattleshipsPlayer {
                 } else {
                     pos = new Position(x + j, y);
                 }
-                myBoard.add(pos);
+                shipPositions.add(pos);
             }
 
             board.placeShip(pos, s, vertical);
@@ -122,23 +124,27 @@ public class MyShooter implements BattleshipsPlayer {
     public Position getFireCoordinates(Fleet enemyShips
     ) {
 
-        currentShot = new Position(rnd.nextInt(sizeX), rnd.nextInt(sizeY));
+        do {
+            currentShot = new Position(rnd.nextInt(sizeX), rnd.nextInt(sizeY));
 
-        for (int x = 0; x < sizeX; x++) {
-            for (int y = 0; y < sizeY; y++) {
-                if (myShootBoard[x][y] == 2) {
-                    Position shot = checkNeighbours(x, y);
-                    if(shot != null) {
-                        currentShot = shot;
-                        return currentShot;
+            for (int x = 0; x < sizeX; x++) {
+                for (int y = 0; y < sizeY; y++) {
+                    if (myShootBoard[x][y] == 2) {
+                        Position shot = checkNeighbours(x, y);
+                        if (shot != null) {
+                            currentShot = shot;
+                            shotFired.add(shot);
+                            return currentShot;
+                        }
+
                     }
-                    printBoard(myShootBoard);
 
-                    //System.out.println(a + "," + b);
                 }
-
             }
-        }
+
+        } while (myShootBoard[currentShot.x][currentShot.y] > 0);
+
+        shotFired.add(currentShot);
         return currentShot;
     }
 
@@ -157,12 +163,9 @@ public class MyShooter implements BattleshipsPlayer {
     ) {
         if (hit) {
             myShootBoard[currentShot.x][currentShot.y] = 2;
-            printBoard(myShootBoard);
-        }
-        else {
+        } else {
             myShootBoard[currentShot.x][currentShot.y] = 1;
         }
-        //Do nothing
 
     }
 
@@ -175,7 +178,7 @@ public class MyShooter implements BattleshipsPlayer {
     @Override
     public void startMatch(int rounds, Fleet ships,
             int sizeX, int sizeY
-    ) { //Flyt
+    ) {
         myShootBoard = new int[sizeX][sizeY];
     }
 
@@ -187,7 +190,6 @@ public class MyShooter implements BattleshipsPlayer {
     @Override
     public void startRound(int round
     ) {
-        printBoard(myShootBoard);
 
     }
 
@@ -204,12 +206,14 @@ public class MyShooter implements BattleshipsPlayer {
     @Override
     public void endRound(int round, int points, int enemyPoints
     ) {
-        printBoard(myShootBoard);
+
         roundCounter++;
         if (roundCounter == 2) {
-            myBoard.clear();
+            shipPositions.clear();
             roundCounter = 0;
         }
+        resetBoards();
+        
     }
 
     /**
@@ -236,7 +240,7 @@ public class MyShooter implements BattleshipsPlayer {
             } else {
                 p1 = new Position(pos.x + j, pos.y);
             }
-            for (Position p : myBoard) {
+            for (Position p : shipPositions) {
                 if (p.equals(p1)) {
                     return true;
                 }
@@ -258,21 +262,38 @@ public class MyShooter implements BattleshipsPlayer {
     }
 
     public Position checkNeighbours(int x, int y) {
-        System.out.println("Check enter");
-
-        System.out.println("denne her" + x + " " + y);
 
         if (x < sizeX - 1 && myShootBoard[x + 1][y] == 0) {
             return new Position(x + 1, y);
         } else if (x > 0 && myShootBoard[x - 1][y] == 0) {
-            return new Position(x - 1, y);//myShootBoard[a+1][b] = 4;
+            return new Position(x - 1, y);
         } else if (y < sizeY - 1 && myShootBoard[x][y + 1] == 0) {
-            return new Position(x, y + 1);//myShootBoard[a+1][b] = 4;
+            return new Position(x, y + 1);
         } else if (y > 0 && myShootBoard[x][y - 1] == 0) {
-            return new Position(x, y - 1);//myShootBoard[a+1][b] = 4;
+            return new Position(x, y - 1);
         } else {
-//            return new Position(rnd.nextInt(sizeX), rnd.nextInt(sizeY));//myShootBoard[a+1][b] = 4;
-              return null;
+//       
+            return null;
+        }
+
+    }
+
+    public boolean checkForDublicates(int x, int y) {
+        for (x = 0; x < sizeX; x++) {
+            for (y = 0; y < sizeY; y++) {
+                if (myShootBoard[x][y] > 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void resetBoards() {
+        for (int x = 0; x < 10; x++) {
+            for (int y = 0; y < 10; y++) {
+                myShootBoard[x][y] = 0;
+            }
         }
 
     }

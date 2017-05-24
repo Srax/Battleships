@@ -12,15 +12,14 @@ import battleship.interfaces.Position;
  * @author DD
  */
 public class MainTest {
-    
-    
+
     public static void main(String[] args) {
-        
+
         System.out.println("hest");
-        
+
         MyShooter MS = new MyShooter();
         MS.startMatch(0, null, 10, 10);
-        int [][] board = new int [10][10];
+        int[][] board = new int[10][10];
         board[0][0] = 2;
         board[0][1] = 1;
         board[1][0] = 1;
@@ -29,18 +28,14 @@ public class MainTest {
                 if (board[x][y] == 2) {
                     Position p = MS.checkNeighbours(x, y);
                     System.out.println(p);
-                    printBoard(board);
+
                 }
             }
         }
-        
-        
-        
-        
-        
-        
+
     }
-     public static void printBoard(int[][] b) {
+
+    public static void printBoard(int[][] b) {
         // traverse 1. dimension
         for (int i = 0; i < b.length; i++) {
             // traverse 2. dimension
@@ -51,5 +46,5 @@ public class MainTest {
         }
 
     }
-     
+
 }
